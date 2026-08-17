@@ -72,7 +72,7 @@ lazy val continuations4s = crossProject(JSPlatform, JVMPlatform, NativePlatform)
     name := "continuations4s",
     libraryDependencies ++= Seq(
       // Testing
-      "org.scalameta" %%% "munit" % "1.3.0" % Test
+      "org.scalameta" %%% "munit" % "1.3.5" % Test
     ),
     testFrameworks += new TestFramework("munit.Framework"),
     Compile / doc / scalacOptions ++= Seq(
@@ -96,8 +96,11 @@ lazy val continuations4s = crossProject(JSPlatform, JVMPlatform, NativePlatform)
     // Emit ES modules with the Wasm backend
     scalaJSLinkerConfig :=
       scalaJSLinkerConfig.value
-        .withESFeatures(_.withESVersion(ESVersion.ES2017)) // enable async/await
-        .withExperimentalUseWebAssembly(true) // use the Wasm backend
+        .withESFeatures(
+          _.withESVersion(ESVersion.ES2022) // required by the Wasm backend (async/await)
+            .withUseWebAssembly(true) // use the Wasm backend
+        )
+        .withWasmFeatures(_.withUseJSPI(true)) // required for js.async/js.await
         .withModuleKind(ModuleKind.ESModule) // required by the Wasm backend
     ,
     // Configure Node.js (at least v23) to support the required Wasm features
