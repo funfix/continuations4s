@@ -14,11 +14,16 @@ Snapshot publishing must be enabled for the `org.funfix` namespace in the
 
 ### Stable releases
 
-Set the release version in `version.sbt` without the `-SNAPSHOT` suffix. Create
-and push the matching tag, such as `v1.2.3`, then run `manual-publish` with
-`ref_to_publish` set to `refs/tags/v1.2.3` and enable `stable_version`. The
-workflow cross-publishes signed JVM, Scala.js, and Scala Native artifacts and
-requests automatic publication to Central.
+To prepare a stable release:
+
+1. Set the release version in `version.sbt` without the `-SNAPSHOT` suffix.
+2. Update both dependency examples in `README.md` to the release version.
+3. Run `./sbt ci-test`.
+
+Commit those changes and create and push the matching tag, such as `v1.2.3`.
+Then run `manual-publish` with `ref_to_publish` set to `refs/tags/v1.2.3` and
+enable `stable_version`. The workflow cross-publishes signed JVM, Scala.js, and
+Scala Native artifacts and requests automatic publication to Central.
 
 The same workflow builds Scaladoc and deploys it to
 <https://continuations4s.funfix.org> through GitHub Pages.

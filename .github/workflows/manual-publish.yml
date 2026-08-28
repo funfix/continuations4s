@@ -14,6 +14,10 @@ on:
         type: boolean
         default: false
 
+concurrency:
+  group: manual-publish
+  cancel-in-progress: false
+
 jobs:
   publish:
     name: Publish to Maven Central

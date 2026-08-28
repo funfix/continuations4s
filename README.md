@@ -14,14 +14,14 @@ Extracted from the [lampepfl/gears](https://github.com/lampepfl/gears) project.
 ## Usage
 
 ```scala ignore
-libraryDependencies += "org.funfix" %%% "continuations4s" % "0.1.0"
+libraryDependencies += "org.funfix" %%% "continuations4s" % "0.2.0"
 ```
 
 Example — this works across JVM, ScalaJS (WASM) and Scala Native (executable [Scala CLI](https://scala-cli.virtuslab.org/) snippet):
 
 ```scala raw
 //> using scala "3.8.1"
-//> using dep "org.funfix::continuations4s::0.1.0"
+//> using dep "org.funfix::continuations4s::0.2.0"
 
 import continuations4s.Continuations
 import scala.concurrent.*
