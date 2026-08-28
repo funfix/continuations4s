@@ -1,0 +1,104 @@
+name: manual-publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref_to_publish:
+        description: 'Git ref. Stable releases require refs/tags/vX.Y.Z'
+        required: true
+        type: string
+        default: refs/heads/main
+      stable_version:
+        description: 'Stable release. The version must not end in -SNAPSHOT'
+        required: true
+        type: boolean
+        default: false
+
+jobs:
+  publish:
+    name: Publish to Maven Central
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 100
+          ref: ${{ inputs.ref_to_publish }}
+
+      - name: Setup JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: sbt
+
+      - uses: sbt/setup-sbt@v1
+
+      - name: Install scala-native dependencies
+        run: sudo apt-get install clang libstdc++-12-dev libgc-dev
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Publish
+        run: bash .github/scripts/release
+        env:
+          PGP_KEY_ID: ${{ secrets.PGP_KEY_ID }}
+          PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+          PGP_SECRET: ${{ secrets.PGP_SECRET }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          PUBLISH_STABLE_VERSION: ${{ inputs.stable_version }}
+          RELEASE_REF: ${{ inputs.ref_to_publish }}
+
+  publish-scaladoc:
+    name: Publish Scaladoc
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 100
+          ref: ${{ inputs.ref_to_publish }}
+
+      - name: Setup JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: sbt
+
+      - uses: sbt/setup-sbt@v1
+
+      - name: Install scala-native dependencies
+        run: sudo apt-get install clang libstdc++-12-dev libgc-dev
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Build Scaladoc
+        run: ./sbt doc
+
+      - name: Add CNAME for custom domain
+        id: scaladoc
+        run: |
+          api_dir="$(find ./jvm/target -type d -name api -print -quit)"
+          test -n "$api_dir"
+          printf 'continuations4s.funfix.org\n' > "$api_dir/CNAME"
+          echo "api_dir=$api_dir" >> "$GITHUB_OUTPUT"
+
+      - name: Upload Scaladoc artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ${{ steps.scaladoc.outputs.api_dir }}
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

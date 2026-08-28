@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cd "$(dirname "$0")/../.." || exit 1
+
+: "${PUBLISH_STABLE_VERSION:?PUBLISH_STABLE_VERSION is required}"
+: "${RELEASE_REF:?RELEASE_REF is required}"
+: "${PGP_KEY_ID:?PGP_KEY_ID is required for signing}"
+: "${PGP_PASSPHRASE:?PGP_PASSPHRASE is required for signing}"
+: "${PGP_SECRET:?PGP_SECRET is required for signing}"
+: "${SONATYPE_USERNAME:?SONATYPE_USERNAME is required for publishing}"
+: "${SONATYPE_PASSWORD:?SONATYPE_PASSWORD is required for publishing}"
+
+git fetch --depth=100 origin +refs/tags/*:refs/tags/*
+
+project_version=$(
+  ./sbt --batch --error --no-colors 'print version' |
+    sed -nE 's/^[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.-]+)*)[[:space:]]*$/\1/p' |
+    tail -n 1
+)
+
+if [[ -z "$project_version" ]]; then
+  echo "Could not determine the project version" >&2
+  exit 1
+fi
+
+case "$PUBLISH_STABLE_VERSION" in
+  true | 1 | yes)
+    if [[ "$project_version" == *-SNAPSHOT ]]; then
+      echo "Stable releases cannot use a -SNAPSHOT version: $project_version" >&2
+      exit 1
+    fi
+
+    expected_ref="refs/tags/v$project_version"
+    if [[ "$RELEASE_REF" != "$expected_ref" ]]; then
+      echo "Stable releases must use $expected_ref" >&2
+      exit 1
+    fi
+
+    if ! git show-ref --verify --quiet "refs/tags/v$project_version"; then
+      echo "HEAD does not have the required tag v$project_version" >&2
+      exit 1
+    fi
+
+    tag_commit="$(git rev-parse "refs/tags/v$project_version^{commit}")"
+    head_commit="$(git rev-parse HEAD^{commit})"
+    if [[ "$tag_commit" != "$head_commit" ]]; then
+      echo "HEAD does not have the required tag v$project_version" >&2
+      exit 1
+    fi
+
+    release_command=ci-publish
+    ;;
+  false | 0 | no)
+    if [[ "$project_version" != *-SNAPSHOT ]]; then
+      echo "Snapshot releases require a -SNAPSHOT version: $project_version" >&2
+      exit 1
+    fi
+    release_command=ci-snapshot
+    ;;
+  *)
+    echo "PUBLISH_STABLE_VERSION must be true or false" >&2
+    exit 1
+    ;;
+esac
+
+printf 'Project version: %s\nRelease ref: %s\n' "$project_version" "$RELEASE_REF"
+
+printf '%s' "$PGP_SECRET" | base64 --decode | gpg --batch --yes --import
+
+./sbt "show version" "$release_command"

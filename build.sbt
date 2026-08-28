@@ -126,5 +126,9 @@ addCommandAlias(
 )
 addCommandAlias(
   "ci-publish",
-  ";Test/compile; publishSigned; sonatypeBundleRelease"
+  ";Test/compile; publishSigned; sonaRelease"
+)
+addCommandAlias(
+  "ci-snapshot",
+  ";Test/compile; +publishSigned"
 )
