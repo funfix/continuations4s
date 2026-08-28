@@ -54,6 +54,7 @@ jobs:
   publish-scaladoc:
     name: Publish Scaladoc
     needs: publish
+    if: ${{ inputs.stable_version }}
     runs-on: ubuntu-latest
     permissions:
       pages: write
