@@ -4,22 +4,21 @@
 
 ### Snapshots
 
+Set the version in `version.sbt`. Development versions must end in `-SNAPSHOT`.
 Run `manual-publish` with a branch ref, such as `refs/heads/main`, and leave
-`stable_version` disabled. The checked-out revision must produce a dynver
-version ending in `-SNAPSHOT`. The workflow runs `ci-snapshot` and publishes
-signed JVM, Scala.js, and Scala Native artifacts to Central's snapshot
-repository.
+`stable_version` disabled. The workflow runs `ci-snapshot` and publishes signed
+JVM, Scala.js, and Scala Native artifacts to Central's snapshot repository.
 
 Snapshot publishing must be enabled for the `org.funfix` namespace in the
 [Central Portal](https://central.sonatype.com/).
 
 ### Stable releases
 
-Create and push an exact tag such as `v1.2.3`, then run `manual-publish` with
-`ref_to_publish` set to `refs/tags/v1.2.3` and enable `stable_version`. The tag's
-dynver version must be `1.2.3`. The workflow cross-publishes signed JVM,
-Scala.js, and Scala Native artifacts and requests automatic publication to
-Central.
+Set the release version in `version.sbt` without the `-SNAPSHOT` suffix. Create
+and push the matching tag, such as `v1.2.3`, then run `manual-publish` with
+`ref_to_publish` set to `refs/tags/v1.2.3` and enable `stable_version`. The
+workflow cross-publishes signed JVM, Scala.js, and Scala Native artifacts and
+requests automatic publication to Central.
 
 The same workflow builds Scaladoc and deploys it to
 <https://continuations4s.funfix.org> through GitHub Pages.
