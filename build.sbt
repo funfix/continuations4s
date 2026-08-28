@@ -1,7 +1,6 @@
 import java.util.Properties
 import org.scalajs.jsenv.nodejs.NodeJSEnv
 import org.scalajs.linker.interface.ESVersion
-import xerial.sbt.Sonatype.sonatypeCentralHost
 
 val publishLocalGradleDependencies =
   taskKey[Unit]("Builds and publishes gradle dependencies")
@@ -14,8 +13,12 @@ inThisBuild(
     organization := "org.funfix",
     scalaVersion := "3.8.1",
     // Configure for Sonatype Central Portal
-    sonatypeCredentialHost := sonatypeCentralHost,
     usePgpKeyHex(sys.env.getOrElse("PGP_KEY_ID", "")),
+    publishTo := {
+      val centralSnapshots = "https://central.sonatype.com/repository/maven-snapshots/"
+      if (version.value.endsWith("-SNAPSHOT")) Some("central-snapshots" at centralSnapshots)
+      else localStaging.value
+    },
     // ---
     // Settings for dealing with the local Gradle-assembled artifacts
     // Also see: publishLocalGradleDependencies

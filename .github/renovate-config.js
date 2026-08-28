@@ -37,10 +37,9 @@ module.exports = {
       allowedVersions: "/^1\\.\\d+\\.\\d+$/",
     },
     {
-      description: "Keep Scala on the 3.8.x line",
       matchManagers: ["sbt"],
       matchPackageNames: ["org.scala-lang:scala3-library_3"],
-      allowedVersions: "/^3\\.8\\.\\d+$/",
+      separateMinorPatch: false,
     },
     {
       description: "Keep wartremover below 3.6.x until it is cross-published for Scala 3.8",
