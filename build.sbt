@@ -12,7 +12,7 @@ val props =
 inThisBuild(
   Seq(
     organization := "org.funfix",
-    scalaVersion := "3.8.1",
+    scalaVersion := "3.8.4",
     // Configure for Sonatype Central Portal
     sonatypeCredentialHost := sonatypeCentralHost,
     usePgpKeyHex(sys.env.getOrElse("PGP_KEY_ID", "")),
