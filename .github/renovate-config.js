@@ -33,7 +33,7 @@ module.exports = {
     {
       description: "Keep sbt on the 1.x line (2.x is not yet supported)",
       matchManagers: ["sbt"],
-      matchPackageNames: ["org.scala-sbt:sbt"],
+      matchPackageNames: ["sbt/sbt"],
       allowedVersions: "/^1\\.\\d+\\.\\d+$/",
     },
     {
@@ -41,6 +41,12 @@ module.exports = {
       matchManagers: ["sbt"],
       matchPackageNames: ["org.scala-lang:scala3-library_3"],
       allowedVersions: "/^3\\.8\\.\\d+$/",
+    },
+    {
+      description: "Keep wartremover below 3.6.x until it is cross-published for Scala 3.8",
+      matchManagers: ["sbt"],
+      matchPackageNames: ["org.wartremover:sbt-wartremover"],
+      allowedVersions: "/^3\\.5\\.\\d+$/",
     },
     {
       description: "Disable updates for libraryDependencySchemes entries (not real versions)",
