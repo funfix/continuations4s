@@ -11,7 +11,7 @@ val props =
 inThisBuild(
   Seq(
     organization := "org.funfix",
-    scalaVersion := "3.8.4",
+    scalaVersion := "3.9.0",
     // Configure for Sonatype Central Portal
     usePgpKeyHex(sys.env.getOrElse("PGP_KEY_ID", "")),
     publishTo := {
@@ -75,7 +75,7 @@ lazy val continuations4s = crossProject(JSPlatform, JVMPlatform, NativePlatform)
     name := "continuations4s",
     libraryDependencies ++= Seq(
       // Testing
-      "org.scalameta" %%% "munit" % "1.3.5" % Test
+      "org.scalameta" %%% "munit" % "1.3.6" % Test
     ),
     testFrameworks += new TestFramework("munit.Framework"),
     Compile / doc / scalacOptions ++= Seq(
