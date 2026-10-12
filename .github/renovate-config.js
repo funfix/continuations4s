@@ -12,7 +12,7 @@ module.exports = {
 
   enabledManagers: ["github-actions", "sbt"],
 
-  ignorePaths: ["**/.gradle/**"],
+  ignorePaths: ["**/.gradle/**", ".github/workflows/*.lock.yml"],
 
   packageRules: [
     {
@@ -31,21 +31,29 @@ module.exports = {
       allowedVersions: "/^\\d+(?:\\.\\d+)+$/",
     },
     {
+      description: "Pin the JDK to Java 21 (LTS)",
+      matchManagers: ["github-actions"],
+      matchPackageNames: ["java-jdk"],
+      allowedVersions: "21",
+    },
+    {
       description: "Keep sbt on the 1.x line (2.x is not yet supported)",
       matchManagers: ["sbt"],
       matchPackageNames: ["sbt/sbt"],
       allowedVersions: "/^1\\.\\d+\\.\\d+$/",
     },
     {
+      description: "Keep Scala on the 3.9.x LTS line (no minor upgrades)",
       matchManagers: ["sbt"],
       matchPackageNames: ["org.scala-lang:scala3-library_3"],
+      allowedVersions: "/^3\\.9\\.\\d+$/",
       separateMinorPatch: false,
     },
     {
-      description: "Keep wartremover below 3.6.x until it is cross-published for Scala 3.8",
+      description: "Keep wartremover on the 3.6.x line (cross-published for Scala 3.9)",
       matchManagers: ["sbt"],
       matchPackageNames: ["org.wartremover:sbt-wartremover"],
-      allowedVersions: "/^3\\.5\\.\\d+$/",
+      allowedVersions: "/^3\\.6\\.\\d+$/",
     },
     {
       description: "Disable updates for libraryDependencySchemes entries (not real versions)",

@@ -1,7 +1,7 @@
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.6.2")
 addSbtPlugin("org.typelevel" % "sbt-tpolecat" % "0.5.7")
-// 3.6.x is not cross-published for Scala 3.8 (the project's Scala version)
-addSbtPlugin("org.wartremover" % "sbt-wartremover" % "3.5.8")
+// 3.6.x is required by Scala 3.9 (the project's Scala version)
+addSbtPlugin("org.wartremover" % "sbt-wartremover" % "3.6.3")
 addSbtPlugin("com.github.sbt" % "sbt-pgp" % "2.3.2")
 addSbtPlugin("com.eed3si9n" % "sbt-salad-days" % "0.2.0")
 

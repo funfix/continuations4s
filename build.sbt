@@ -11,7 +11,7 @@ val props =
 inThisBuild(
   Seq(
     organization := "org.funfix",
-    scalaVersion := "3.10.0",
+    scalaVersion := "3.9.0",
     // Configure for Sonatype Central Portal
     usePgpKeyHex(sys.env.getOrElse("PGP_KEY_ID", "")),
     publishTo := {
